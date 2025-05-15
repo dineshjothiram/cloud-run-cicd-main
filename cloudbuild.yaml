@@ -1,37 +1,34 @@
 steps:
+  # Step 1: Build the Docker image
   - name: 'gcr.io/cloud-builders/docker'
     args:
       [
         'build',
-        '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repo/cloud-run-app:$SHORT_SHA',
+        '-t',
+        'gcr.io/faa-gcp-training-14-kfa-0808/cloud-run-app:$SHORT_SHA',
         '.'
       ]
-    id: 'Build Docker image'
 
+  # Step 2: Push the image to Container Registry / Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args:
-      [
-        'push',
-        'us-central1-docker.pkg.dev/$PROJECT_ID/my-repo/cloud-run-app:$SHORT_SHA'
-      ]
-    id: 'Push to Artifact Registry'
+      ['push', 'gcr.io/faa-gcp-training-14-kfa-0808/cloud-run-app:$SHORT_SHA']
 
+  # Step 3: Trigger Cloud Deploy to roll out the new release
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'gcloud'
     args:
       [
-        'run', 'deploy', 'cloud-run-app',
-        '--image', 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repo/cloud-run-app:$SHORT_SHA',
-        '--region', 'us-central1',
-        '--platform', 'managed',
-        '--allow-unauthenticated',
-        '--set-env-vars', 'VERSION=$SHORT_SHA'
+        'deploy',
+        'releases',
+        'create',
+        'release-$SHORT_SHA',
+        '--delivery-pipeline=cloud-run-pipeline',
+        '--region=us-central1',
+        '--images=cloud-run-app=gcr.io/faa-gcp-training-14-kfa-0808/cloud-run-app:$SHORT_SHA'
       ]
-    id: 'Deploy to Cloud Run'
 
-options:
-  defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET
-
+# Optional: define substitutions
 substitutions:
-  _SERVICE_NAME: cloud-run-app
-
+  _REGION: us-central1
+  _SERVICE_NAME: cloud-
