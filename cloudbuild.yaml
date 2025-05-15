@@ -31,4 +31,12 @@ steps:
 # Optional: define substitutions
 substitutions:
   _REGION: us-central1
-  _SERVICE_NAME: cloud-ru
+  _SERVICE_NAME: cloud-run-app
+
+# Optional: timeout for the whole build
+timeout: '900s'
+
+# ✅ Logging behavior — skip GCS log bucket
+options:
+  logging: CLOUD_LOGGING_ONLY
+
