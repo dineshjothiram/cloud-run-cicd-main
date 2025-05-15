@@ -31,4 +31,4 @@ steps:
 # Optional: define substitutions
 substitutions:
   _REGION: us-central1
-  _SERVICE_NAME: cloud-
+  _SERVICE_NAME: cloud-ru
