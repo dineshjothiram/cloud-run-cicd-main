@@ -5,14 +5,14 @@ steps:
       [
         'build',
         '-t',
-        'gcr.io/faa-gcp-training-14-kfa-0808/cloud-run-app:$SHORT_SHA',
+        'us-central1-docker.pkg.dev/faa-gcp-training-14-kfa-0808/my-repo/cloud-run-app:$SHORT_SHA',
         '.'
       ]
 
-  # Step 2: Push the image to Container Registry / Artifact Registry
+  # Step 2: Push the image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args:
-      ['push', 'gcr.io/faa-gcp-training-14-kfa-0808/cloud-run-app:$SHORT_SHA']
+      ['push', 'us-central1-docker.pkg.dev/faa-gcp-training-14-kfa-0808/my-repo/cloud-run-app:$SHORT_SHA']
 
   # Step 3: Trigger Cloud Deploy to roll out the new release
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -25,7 +25,7 @@ steps:
         'release-$SHORT_SHA',
         '--delivery-pipeline=cloud-run-pipeline',
         '--region=us-central1',
-        '--images=cloud-run-app=gcr.io/faa-gcp-training-14-kfa-0808/cloud-run-app:$SHORT_SHA'
+        '--images=cloud-run-app=us-central1-docker.pkg.dev/faa-gcp-training-14-kfa-0808/my-repo/cloud-run-app:$SHORT_SHA'
       ]
 
 # Optional: define substitutions
@@ -36,7 +36,7 @@ substitutions:
 # Optional: timeout for the whole build
 timeout: '900s'
 
-# ✅ Logging behavior — skip GCS log bucket
+# ✅ Disable GCS logs bucket
 options:
   logging: CLOUD_LOGGING_ONLY
 
